@@ -9,4 +9,3 @@ function x = Exercise1( L, A, b, M )
 x = A*exp(-b * mod([0:L-1],M));
 
 end
-
