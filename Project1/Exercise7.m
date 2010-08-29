@@ -40,7 +40,7 @@ title('Output of $\displaystyle y[n] = x[n] - y^2[n-1] + y[n-1]$', ...
 % places of accuracy over a range of inputs.
 
 % Check 100 input values between 0 and 1, for statistics purposes.
-inputs = linspace(0,1,100);
+inputs = linspace(0,1,1000);
 
 outputs = zeros(2,size(inputs,2));
 
