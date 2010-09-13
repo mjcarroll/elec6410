@@ -7,11 +7,12 @@
 % filter command.
 
 %%% Solution
-% Using the properties of the Z-transform, the difference equation can be
+% Using the properties of the Fourier transform, the difference equation can be
 % rearranged to the following:
 %
-% $$\frac{Y(z)}{X(z)} = \frac{1 + 0.5z^{-1} + 0.3z^{-2}}{1 - 0.9z^{-1} +
-% 0.7z^{-2}}$$
+% $$\frac{Y(e^{j\omega})}{X(e^{j\omega})} = 
+% \frac{1 + 0.5e^{-j\omega} + 0.3e^{-2j\omega}}
+% {1 - 0.9e^{-j\omega} + 0.7e^{-2j\omega}}$$
 %
 % Yielding the following two vectors, with vector "a" representing the y coefficients,
 % and vector "b" representing the x coefficiencts:
@@ -26,6 +27,44 @@ b = [1, 0.5, 0.3];
 % expression that is real.
 
 %%% Solution
+% Using the derived equation in the Fourier domain from Question 1, the
+% impulse response of h[n] may be calculated.
+%
+% $$H(e^{j\omega}) = \frac{Y(e^{j\omega})}{X(e^{j\omega})} = 
+% \frac{1 + 0.5e^{-j\omega} + 0.3e^{-2j\omega}}
+% {1 - 0.9e^{-j\omega} + 0.7e^{-2j\omega}}$$
+%
+% Using partial fraction expansion and the residuez command in MATLAB, this
+% yields the equation:
+%
+% $$H(e^{j\omega}) = \frac{R(1)}{1-P(1)e^{-jw}} + \frac{R(2)}{1-P(2)e^{-j\omega}} +
+% k$$
+%
+% Which equals:
+%
+% $$H(e^{j\omega}) = \frac{0.2857 - 0.8101j}{1- (0.45 + 0.7053j)e^{-j\omega}} +
+% \frac{0.2857 + 0.8101j}{1 - (0.45 - 0.7053j)e^{-j\omega}} + 0.4286$$
+%
+% Using the Inverse DTFT yields:
+%
+% $$h[n] = 0.4286\delta[n] + (0.2857 - 0.8101j)(0.45 + 0.7053j)^{n}\mu[n] + 
+% (0.2857 + 0.8101j)(0.45 - 0.7053j)^{n}\mu[n]$$
+%
+% Using the exponential representation of complex numbers:
+%
+% $$h[n] = 0.4286\delta[n] + (0.859e^{-1.2317j})(0.8366e^{j})^{n}\mu[n] +
+% (0.859e^{1.2317j})(0.8366e^{-j})^{n}\mu[n]$$
+%
+% Combining some of the exponential terms:
+%
+% $$h[n] = 0.4286\delta[n] + 0.718e^{(-1.2317 + n)j} + 0.718e^{(1.2317 -
+% n)j}\mu[n]$$
+%
+% Using Euler's Identity:
+%
+% $$h[n] = 0.4286\delta[n] + 1.436\cos{(n - 1.2317)}\mu[n]$$
+
+[r,p,k] = residuez(b,a)
 
 %% Question 3
 % Create an impulse (not a pulse!) of length 100.  Recall that systems
@@ -94,6 +133,20 @@ xlabel('Samples');ylabel('Amplitude');
 % # Is this system more of a highpass, a lowpass, or a bandpass filter?
 % Explain your answer.
 
+%%% Solution
+%
+% The frequency response of the system was found as part of the derivation
+% of h[n].
+%
+% $$H(e^{j\omega}) = \frac{Y(e^{j\omega})}{X(e^{j\omega})} = 
+% \frac{1 + 0.5e^{-j\omega} + 0.3e^{-2j\omega}}
+% {1 - 0.9e^{-j\omega} + 0.7e^{-2j\omega}}$$
+%
+% From looking at the graph of the magnitude and phase Response in figure
+% 3, then system appears to be a low-pass filter, but it is important to
+% remember that the frequency response is periodic in $\omega$ with a
+% period of $2\pi$.  This makes the filter a bandpass filter.
+
 figure(3);
 freqz(b,a);
 title('Magnitude and Phase Response');
@@ -110,27 +163,36 @@ title('Magnitude and Phase Response');
 % # Now add the two signals together and filter the sum of the two.
 % Explain the output in light of your previous observations.
 
+%%% Solution
+%
+% To determine the effect of the filter on the two signals, it is important
+% to note where in the magnitude response that the two signals fall.  The
+% first signal, x1, falls at $0.32\pi$ radians, which is in the middle of
+% the pass band of the filter (about 15dB gain).  The second signal, x2,
+% falls at $0.8\pi$ radians, which is in the middle of the stop band of the
+% filter (about -10dB attenuation).
+%
+% Using this knowledge, the output of the filter for the two different
+% input signals can be seen in figure 4.  As expected, the first signal,
+% x1, has a significant gain in amplitude, reaching a value of almost 5.
+% The second signal, x2, has a decrease in amplitude, barely reaching 0.5.
+%
+% The combination of the two signals yields the same results, with the
+% major peaks in the signal coming mainly from the contributions of signal
+% x1.
+
 x1 = cos(0.32*pi*(0:1:100));
 x2 = cos(0.80*pi*(0:1:100));
 
 figure(4);
 subplot(2,1,1);
-stem(x1);
-title('x1');
-subplot(2,1,2);
-title('x2');
-
-figure(5);
-subplot(2,1,1);
 stem(filter(b,a,x1));
-title('Filter Response to x1');
-xlabel('Samples');ylabel('Amplitude');
+title('Filter Response to x1');xlabel('Samples');ylabel('Amplitude');
 subplot(2,1,2);
 stem(filter(b,a,x2));
-title('Filter Response to x2');
-xlabel('Samples');ylabel('Amplitude');
+title('Filter Response to x2');xlabel('Samples');ylabel('Amplitude');
 
-figure(6);
+figure(5);
 stem(filter(b,a,x1+x2));
 title('Filter Reponse to Combined x1 and x2');
 xlabel('Samples');ylabel('Amplitude');
