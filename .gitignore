@@ -1,0 +1,8 @@
+# MATLAB Files #
+################
+*.m~
+# LaTeX Outputs #
+#################
+*.aux
+*.out
+*.log
