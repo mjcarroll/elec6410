@@ -78,60 +78,46 @@
 \rhead{\fancyplain{}{\today}}
 \rfoot{\fancyplain{}{\thepage\ of \pageref{LastPage}}}
 
-     <!-- Determine if the there should be an introduction section. -->
-     <xsl:variable name="hasIntro" select="count(cell[@style = 
-'overview'])"/>
-     <xsl:if test = "$hasIntro">
-      \title{<xsl:apply-templates select="cell[1]/steptitle"/>\\
-      {\large <xsl:apply-templates select="cell[1]/text"/>}}
-      \author{Michael J. Carroll}
-     </xsl:if>
+<!-- Determine if the there should be an introduction section. -->
+<xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>
+<xsl:if test = "$hasIntro">
+    \title{<xsl:apply-templates select="cell[1]/steptitle"/>\\
+    {\large <xsl:apply-templates select="cell[1]/text"/>}}
+    \author{Michael J. Carroll}
+</xsl:if>
 
 \begin{document}
-   \maketitle
+\maketitle
 
-     <xsl:variable name="body-cells" select="cell[not(@style = 
-'overview')]"/>
+<xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
+    <!-- Loop over each cell -->
+    <xsl:for-each select="$body-cells">
+    <!-- Title of cell -->
+    <xsl:if test="steptitle">
+        <xsl:variable name="headinglevel">
+            <xsl:choose>
+                <xsl:when test="steptitle[@style = 'document']">section</xsl:when>
+                <xsl:otherwise>subsection</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+           
+        \<xsl:value-of select="$headinglevel"/>*{<xsl:apply-templates select="steptitle"/>}
+    </xsl:if>
 
-     <!-- Include contents if there are titles for any subsections. 
-     <xsl:if test="count(cell/steptitle[not(@style = 'document')])">
-   \tableofcontents
-     </xsl:if>
-     -->
-
-     <!-- Loop over each cell -->
-     <xsl:for-each select="$body-cells">
-         <!-- Title of cell -->
-         <xsl:if test="steptitle">
-           <xsl:variable name="headinglevel">
-             <xsl:choose>
-               <xsl:when test="steptitle[@style = 
-'document']">section</xsl:when>
-               <xsl:otherwise>subsection</xsl:otherwise>
-             </xsl:choose>
-           </xsl:variable>
-
-\<xsl:value-of select="$headinglevel"/>*{<xsl:apply-templates 
-select="steptitle"/>}
-
-</xsl:if>
-
-         <!-- Contents of each cell -->
-         <xsl:apply-templates select="text"/>
-         <xsl:apply-templates select="mcode"/>
-         <xsl:apply-templates select="mcodeoutput"/>
-         <xsl:apply-templates select="img"/>
+    <!-- Contents of each cell -->
+    <xsl:apply-templates select="text"/>
+    <xsl:apply-templates select="mcode"/>
+    <xsl:apply-templates select="mcodeoutput"/>
+    <xsl:apply-templates select="img"/>
 % end of cell
 
-     </xsl:for-each>
+    </xsl:for-each>
 
-
-<xsl:if test="copyright">
-\begin{par} \footnotesize \color{lightgray} \begin{flushright}
-\emph{<xsl:apply-templates select="copyright"/>}
-\end{flushright} \color{black} \normalsize \end{par}
-</xsl:if>
-
+    <xsl:if test="copyright">
+        \begin{par} \footnotesize \color{lightgray} \begin{flushright}
+        \emph{<xsl:apply-templates select="copyright"/>}
+        \end{flushright} \color{black} \normalsize \end{par}
+    </xsl:if>
 
 \end{document}
 
@@ -185,7 +171,8 @@ select="."/>\end{verbatim}</xsl:template>
 
 <!-- Code input and output -->
 
-<xsl:template match="mcode">\begin{lstlisting}[language=matlab]
+<xsl:template match="mcode">
+\begin{lstlisting}[language=matlab]
 <xsl:value-of select="."/>
 \end{lstlisting}
 </xsl:template>
@@ -239,12 +226,12 @@ match="mwsh:code">\begin{verbatim}<xsl:apply-templates/>\end{verbatim}
    <replace><from>%</from><to>\%</to></replace>
    <replace><from>#</from><to>\#</to></replace>
    <replace><from>_</from><to>\_</to></replace>
-   <replace><from>{</from><to>\{</to></replace>
-   <replace><from>}</from><to>\}</to></replace>
+   <!--<replace><from>{</from><to>\{</to></replace>
+   <replace><from>}</from><to>\}</to></replace>-->
    <!-- mainly in code -->
-   <replace><from>~</from><to>\ensuremath{\tilde{\;}}</to></replace>
+   <!--<replace><from>~</from><to>\ensuremath{\tilde{\;}}</to></replace>-->
    <replace><from>^</from><to>\^{}</to></replace>
-   <replace><from>\</from><to>\ensuremath{\backslash}</to></replace>
+   <!--<replace><from>\</from><to>\ensuremath{\backslash}</to></replace>-->
    <!-- mainly in math -->
    <replace><from>|</from><to>\ensuremath{|}</to></replace>
    <replace><from>&lt;</from><to>\ensuremath{&lt;}</to></replace>
