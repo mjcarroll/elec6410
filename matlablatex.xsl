@@ -78,6 +78,9 @@
 \rhead{\fancyplain{}{\today}}
 \rfoot{\fancyplain{}{\thepage\ of \pageref{LastPage}}}
 
+\sloppy
+\setlength{\parindent}{0pt}
+
 <!-- Determine if the there should be an introduction section. -->
 <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>
 <xsl:if test = "$hasIntro">
@@ -126,9 +129,10 @@
 
 
 <!-- HTML Tags in text sections -->
-<xsl:template match="p">
-
-<xsl:apply-templates/><xsl:text></xsl:text>
+<xsl:template match="p">\begin{par}
+<xsl:apply-templates/><xsl:text>
+\end{par} \vspace{1em}
+</xsl:text>
 </xsl:template>
 
 <xsl:template match="ul">\begin{itemize}
