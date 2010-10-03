@@ -3,7 +3,7 @@
 %% Question 1
 % Examine a sampled waveform
 
-%% Part A
+r% Part A
 % Sample the waveform $x(t) = 3\cos{3000\pi t} + \cos{800\pi t}$ at a sampling
 % frequency of 16 kHz for one second:
 %
