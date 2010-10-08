@@ -3,7 +3,7 @@ function [ X ] = dftmjc( x )
 %   Michael's (probably bad) implementation of the DFT.
 
 % Verify that we are getting a proper 1-D integer sequence in.
-validateattributes(x,{'numeric'},{'vector','integer'});
+validateattributes(x,{'numeric'},{'vector'});
 
 % Preallocate the array for speed.
 N = length(x);
