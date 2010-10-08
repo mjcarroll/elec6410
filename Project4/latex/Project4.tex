@@ -1,0 +1,217 @@
+
+% This LaTeX was auto-generated from an M-file by MATLAB.
+% To make changes, update the M-file and republish this document.
+
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{fullpage,fancyhdr}
+\usepackage[pdftex]{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{ifthen}
+\usepackage{setspace}
+\usepackage{lastpage}
+\usepackage{extramarks}
+\usepackage{chngpage}
+\usepackage{soul}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{epstopdf}
+\usepackage{geometry}
+\usepackage{pdfcolmk}
+\usepackage{hyperref}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\definecolor{lightgray}{gray}{0.5}
+\definecolor{darkgray}{gray}{0.3}
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0}
+
+\topmargin=-0.45in      %
+\evensidemargin=0in     %
+\oddsidemargin=0in      %
+\textwidth=6.5in        %
+\textheight=9.0in       %
+\headsep=0.25in         %
+
+\pagestyle{fancyplain}
+
+% For faster processing, load Matlab syntax for listings
+\lstloadlanguages{Matlab}%
+\lstset{language=Matlab,
+        frame=single,
+        basicstyle=\ttfamily,
+        keywordstyle=[1]\color{Blue}\bf,
+        keywordstyle=[2]\color{Purple},
+        keywordstyle=[3]\color{Blue}\underbar,
+        identifierstyle=,
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small,
+        stringstyle=\color{Purple},
+        showstringspaces=false,
+        tabsize=5,
+        % Put standard MATLAB functions not included in the default
+        % language here
+        morekeywords={xlim,ylim,var,alpha,factorial,poissrnd,normpdf,normcdf},
+        % Put MATLAB function parameters here
+        morekeywords=[2]{on, off, interp},
+        % Put user defined functions here
+        morekeywords=[3]{FindESS},
+        morecomment=[l][\color{Blue}]{...},
+        numbers=left,
+        firstnumber=1,
+        numberstyle=\tiny\color{Blue},
+        stepnumber=5
+        }
+
+ 
+\fancyhf{}
+ 
+\lhead{\fancyplain{}{Michael Carroll}}
+\chead{\fancyplain{}{ELEC6410 - DSP}}
+\rhead{\fancyplain{}{\today}}
+\rfoot{\fancyplain{}{\thepage\ of \pageref{LastPage}}}
+
+\sloppy
+\setlength{\parindent}{0pt}
+
+% Alter some LaTeX defaults for better treatment of figures:
+    % See p.105 of "TeX Unbound" for suggested values.
+    % See pp. 199-200 of Lamport's "LaTeX" book for details.
+    %   General parameters, for ALL pages:
+    \renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+    \renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+    %   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{2}
+    \setcounter{bottomnumber}{2}
+    \setcounter{totalnumber}{4}     % 2 may work better
+    \setcounter{dbltopnumber}{2}    % for 2-column pages
+    \renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+    \renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+    %   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+	% N.B.: floatpagefraction MUST be less than topfraction !!
+    \renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+
+	% remember to use [htp] or [htpb] for placement
+
+\linespread{1.3}
+
+\title{ELEC6410 Project 4\\
+ {\large \begin{par}
+Answers to Digital Signal Processing Project \#4
+\end{par}
+}}
+\author{Michael J. Carroll}
+
+\begin{document}
+\maketitle
+           
+\section*{Question 1}
+\begin{par}
+Write a MATLAB function that implements a DFT using the DFT summation formula.
+\end{par}
+\lstinputlisting{../dftmjc.m}
+
+\section*{Question 2}
+\begin{par}
+Compare the time required for a DFT matrix multiply and the function written in question 1. To accomplish this, I ran each implementation 10 times to get an average value for the tic/toc output.  The code I used is included below. The results are discussed in Question 3.
+\end{par}
+
+\begin{lstlisting}[language=matlab]
+F = dftmtx(2^11);
+mjctimes = zeros([1,10]);mattimes = zeros([1,10]);
+x = rand([1,2^11]);
+for n = 1:10,
+    tic;Xf = dftmjc(x);mjctimes(n) = toc;
+    tic;Xf = F * x';mattimes(n) = toc;
+end
+mean(mjctimes)
+mean(mattimes)
+\end{lstlisting}
+
+\section*{Question 3}
+\begin{par}
+I repeated the same exercise with MATLAB's FFT function.
+\end{par}
+\begin{lstlisting}[language=matlab]
+x = rand([1,2^11]);
+ffttimes = zeros([1,10000]);
+for n=1:10000,
+    tic;Xf = fft(x);ffttimes(n) = toc;
+end
+mean(ffttimes)
+\end{lstlisting}
+
+\begin{table}[tbph]
+\begin{center}
+\begin{tabular}[tbph]{| r| r | r |}
+\hline
+DFT Summation & DFT Matrix Multiply & MATLAB FFT \\
+\hline
+2.778 seconds & 0.768 seconds & 35.64 microseconds \\
+\hline
+\end{tabular}
+\caption{Average execution time of three DFT implementations}
+\end{center}
+\end{table}
+
+\begin{par}
+As can be seen in Table 1, MATLAB's FFT is significantly faster than the DFT matrix multiplication and the DFT summation function that I wrote.  This stands to reason, as the FFT algorithm itself is much faster than either of the others.  The summation and the matrix multiply should be close in time complexity (on order of $O(n^2)$), while the FFT should have a much lower time complexity (on the order of $O(n\ log(n))$).\\
+\\
+In addition to the algorithmic speedup, the matrix multiplication and the FFT should also have increased speedup from MATLAB's implementation.  MATLAB relies heavily on the FFTW library, which uses various additional instruction sets to gain additional speed from hardware.  Matrix multiplication in MATLAB probably also utilizes these low-level speedups.
+\end{par}
+
+\section*{Question 4}
+\begin{par}
+I repeated the same exercise as Question 3, except this time the sequence was length $2^{11}-1$.  Including the code is not necessary, as it is identical to Question 3's implementation.  The major factor playing into execution time for this sequence is that it is prime-length.  This means that the typical FFT algorithm cannot be used, and a different (Rader) algorithm, with a higher time complexity, is used.  The average execution time for this sequence was 357.9 microseconds, or roughly an order of magnitude slower.
+\end{par}
+
+\section*{Question 5}
+My implementation of a MATLAB function that implements linear convolution of two input sequences using FFTs is included below.  The results are in Table 2.
+\lstinputlisting{../linearConv.m}
+
+\begin{table}[tbph]
+\begin{center}
+\begin{tabular}[tbph]{| r| r |}
+\hline
+MATLAB's Convolution & FFT Convolution \\
+\hline
+0.0155 seconds & 0.0045 seconds \\
+\hline
+\end{tabular}
+\caption{Average execution time of two convolution implementations}
+\end{center}
+\end{table}
+
+\begin{par}
+The FFT convolution is about three times faster than the bulit-in MATLAB conv function.  This is probably because MATLAB's implementation is a more general case, and cannot take advantage of the FFT implementation's speedup.
+\end{par}
+
+\section*{Question 6}
+\begin{par}I implemented a MATLAB function that implements a non-power-of-two FFT using power-of-two FFT's.  My function is included below.\\
+\\
+The results of the speed comparison are included in Table 3. MATLAB's FFT is still faster than my convolution function, but is still considerably slower than the power-of-two FFT.  I would assume that the two are probably on the same order of time complexity, but my implementation is probably worse than the FFTW implementation that MATLAB is using.  Once again, MATLAB also has a speed advantage by using additional hardware.  \\
+\\
+My implementation uses the Bluestein algorithm, also known as the Chirp-z algorithm.  I opted to use FFTs to perform the convolution.
+\end{par}
+\newpage
+\lstinputlisting{../nonpowfft.m}
+
+\begin{table}[tbph]
+\begin{center}
+\begin{tabular}[tbph]{| r| r |}
+\hline
+MATLAB's FFT & FFT by Convolution \\
+\hline
+0.617 seconds & 2.149 seconds \\
+\hline
+\end{tabular}
+\caption{Average execution time of two FFT implementations}
+\end{center}
+\end{table}
+
+\begin{par}
+The complete source to this project, including TeX, is available on my Github account at \htmladdnormallink{http://github.com/mjcarroll/elec6410}{http://github.com/mjcarroll/elec6410}
+\end{par}
+
+\end{document}
+

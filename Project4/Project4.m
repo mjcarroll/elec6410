@@ -16,28 +16,25 @@
 % be a better measure of performance.  Why would wall time be a benchmark?
 F = dftmtx(2^11);
 
-mjctimes = zeros([1,100]);
-mattimes = zeros([1,100]);
+mjctimes = zeros([1,10]);
+mattimes = zeros([1,10]);
 
-% x = rand([1,2^11]);
-% for n = 1:100,
-%     Xf = zeros([1,2^11]);
-%     tic;
-%     Xf = dftmjc(x);
-%     mjctimes(n) = toc;
-% end
-% 
-% disp('Michaels Function: ');
-% mean(mjctimes)
-    
 x = rand([1,2^11]);
-for n = 1:100,
+for n = 1:10,
+    Xf = zeros([1,2^11]);
+    tic;
+    Xf = dftmjc(x);
+    mjctimes(n) = toc;
+end
+disp('Michaels Function: ');
+mean(mjctimes)
+
+for n = 1:10,
     Xf = zeros([1,2^11]);
     tic;
     Xf = F * x';
     mattimes(n) = toc;
 end
-
 disp('Matrix Multiply: ');
 mean(mattimes)
 
@@ -93,14 +90,27 @@ fftconvtimes = zeros([1,1000]);
 for n=1:1000,
     tic;
     linearConv(x1,x2);
-    fftconvtimes = toc(n);
+    fftconvtimes(n) = toc;
     tic;
     conv(x1,x2);
-    convtimes = toc(n);
+    convtimes(n) = toc;
 end
 
 disp('FFT Convolution Time')
 mean(fftconvtimes)
 disp('MATLAB Convolution Time')
 mean(convtimes)
+
+%% Question 6
+
+% Make the sequence a BIG prime length.
+x = rand([1,999983]);
+
+tic;
+nonpowfft(x);
+toc
+
+tic;
+fft(x);
+toc
     
