@@ -67,21 +67,18 @@ spectrum = fftshift(spectrum);
 
 stem(freq,abs(spectrum))
 
-Wp = .2; Ws = .8;
+Wp = 567* 2/8000; Ws = 712 * 2/8000;
 Rp = 3;  Rs = 15;
 
 [Nb,Wnb] = buttord(Wp, Ws, Rp, Rs);
 [Bb,Ab] = butter(Nb,Wnb,'low');
 yb = filter(Bb,Ab,audio);
-
 [Nc1,Wnc1] = cheb1ord(Wp, Ws, Rp, Rs);
 [Bc1,Ac1] = cheby1(Nc1,Rp,Wnc1,'low');
 yc1 = filter(Bc1,Ac1,audio);
-
 [Nc2,Wnc2] = cheb2ord(Wp, Ws, Rp, Rs);
 [Bc2,Ac2] = cheby2(Nc2,Rp, Wnc2,'low');
 yc2 = filter(Bc2,Ac2,audio);
-
 [Ne,Wne] = ellipord(Wp, Ws, Rp, Rs);
 [Be,Ae] = ellip(Ne,Rp,Rs,Wne,'low');
 ye = filter(Be,Ae,audio);
